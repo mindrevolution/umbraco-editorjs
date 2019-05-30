@@ -1,0 +1,44 @@
+.codex-editor-overlay__rectangle {
+    background-color:rgba(46,170,220,.2);
+    border:1px solid transparent
+}
+
+::-moz-selection{background-color:#fcf4f3}
+::selection{background-color:#fcf4f3}
+
+[contentEditable=true]
+[data-placeholder]:empty:before{content:attr(data-placeholder);color:#707684;}
+
+.ce-toolbar__plus{color:#707684;}
+    
+.ce-toolbar__plus:hover{color:#f5c1bc}
+.ce-toolbar__settings-btn{color:#707684;}
+
+.ce-toolbox__button{color:#707684;}
+
+.ce-toolbox__button:hover{color:#f5c1bc}
+
+.ce-toolbox__tooltip-shortcut{color:rgba(100,105,122,.6);}
+.ce-toolbox__tooltip:before{background-color:#f6f4f4;}
+    
+.ce-inline-tool{color:#707684}
+.ce-inline-tool:hover{background-color:#fcf4f3}
+
+.ce-inline-tool--active{color:#1b264f}
+.ce-inline-tool-input{background-color:#f6f4f4;}
+.ce-inline-tool-input::-webkit-input-placeholder{color:#707684}
+.ce-inline-tool-input:-ms-input-placeholder{color:#707684}
+.ce-inline-tool-input::-ms-input-placeholder{color:#707684}
+.ce-inline-tool-input::placeholder{color:#707684}
+
+.codex-editor svg circle {
+    fill: #1b264f;
+}
+.tc-toolbar {
+    background: #1b264f !important;
+}
+
+.cdx-checklist__item--checked .cdx-checklist__item-checkbox {
+    background-color: #1b264f;
+    border-color: #1b264f;
+}

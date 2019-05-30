@@ -1,0 +1,47 @@
+﻿{
+	"gridEditors": [
+      {
+        "alias": "editorjs",
+        "name": "Editor.js",
+        "view": "/App_Plugins/editorjs/GridEditor.html",
+			  //"render": "/app_plugins/yourpackage/custom-render.cshtml",
+			  "icon": "icon-list"
+      }
+    ]
+	,
+	"propertyEditors": [
+	    {
+		    "alias": "editorjs",
+		    "name": "Editor.js",
+		    "editor": {
+			    "valueType": "JSON",
+			    "hideLabel": true,
+			    "view": "/App_Plugins/editorjs/PropertyEditor.html"
+		    },
+		    "isParameterEditor": false,
+		    "group": "Content",
+		    "prevalues": {
+			    "fields": [
+				    {
+					    "label": "Blocks",
+					    "description": "Configure the blocks available",
+					    "key": "blocks",
+					    "view": "/App_Plugins/editorjs/Settings.Blocks.html"
+				    }
+			    ]
+		    }
+	    }
+	  ]
+	,
+  "javascript": [
+    "/App_Plugins/editorjs/Lib/editorjs/editor.js",
+    "/App_Plugins/editorjs/BaseEditor.Controller.js",
+
+    "/App_Plugins/editorjs/Resources/Settings.Resource.js",
+    "/App_Plugins/editorjs/Settings.Blocks.Controller.js"
+  ]
+  //,
+  //"css": [
+  //	//"/App_Plugins/editorjs/backoffice.css"
+  //]
+}
