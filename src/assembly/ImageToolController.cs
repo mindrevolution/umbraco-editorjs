@@ -38,7 +38,7 @@ namespace Editorjs.Controllers
                 IPublishedContent media = MediaHelper.AddImageUpload(Services.MediaService, Services.ContentTypeBaseServices, Umbraco, imagefile.FileName, filepath);
 
                 
-                r = new UploadResponse(1, string.Format("{0}?width={1}&mode=max", media.Url, imageEditorPreviewWidth), Udi.Create(Constants.UdiEntityType.Media, media.Key));
+                r = new UploadResponse(1, string.Format("{0}?width={1}&mode=max&format=jpeg&quality=90", media.Url, imageEditorPreviewWidth), Udi.Create(Constants.UdiEntityType.Media, media.Key));
             }
             else
             {
