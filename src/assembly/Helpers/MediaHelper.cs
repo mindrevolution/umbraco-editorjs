@@ -1,12 +1,13 @@
-﻿using System.Web.Mvc;
-using Umbraco.Core;
+﻿using Umbraco.Core;
 using Umbraco.Core.Models;
 using Umbraco.Core.Services;
 using Umbraco.Web;
 using System.Linq;
-using System.Web;
 using System.IO;
 using Umbraco.Core.Models.PublishedContent;
+using System.Net;
+using Editorjs.Models;
+using System.Web;
 
 namespace Editorjs.Helpers
 {
@@ -64,7 +65,7 @@ namespace Editorjs.Helpers
         //}
 
 
-        public static IPublishedContent AddImageUpload(IMediaService mediaService, IContentTypeBaseServiceProvider contentTypeBaseServiceProvider, UmbracoHelper umbraco, string filename, string tempfile)
+        public static IPublishedContent AddImageByFile(IMediaService mediaService, IContentTypeBaseServiceProvider contentTypeBaseServiceProvider, UmbracoHelper umbraco, string filename, string tempfile)
         {
             _mediaService = mediaService;
             string name = System.IO.Path.GetFileNameWithoutExtension(filename);
@@ -85,6 +86,43 @@ namespace Editorjs.Helpers
             }
 
             return umbraco.Media(media.Id);
+        }
+
+        public static IPublishedContent AddImageByUrl(IMediaService mediaService, IContentTypeBaseServiceProvider contentTypeBaseServiceProvider, UmbracoHelper umbraco, string url)
+        {
+            var ctx = HttpContext.Current;
+
+            string urlFilename = Path.GetFileName(new System.Uri(url).LocalPath);
+            string tempfile = string.Format("/App_Data/TEMP/FileUploads/{0}{1}", System.Guid.NewGuid(), System.IO.Path.GetExtension(urlFilename));
+            tempfile = ctx.Server.MapPath(tempfile);
+
+            // - TODO
+            // - This effectively bypasses and upload limits configured on the server.
+            // - You can easily file-bomb the host by providing a huge (scripted) response from a fast destination (sub timeout)
+            // - To add fuel to the fire, WebClient has a built in default timeout of 100 seconds (yikes!)
+            // - Also ... loading the image 'through' ImageSharp (or ImageProcesor) after download would
+            // - ensure that is really is a valid image (and not an attack/trojan image for the frontend client)?
+            using (WebClient webclient = new WebClient())
+            {
+                webclient.DownloadFile(url, tempfile);
+            }
+
+            return AddImageByFile(mediaService, contentTypeBaseServiceProvider, umbraco, urlFilename, tempfile);
+        }
+
+        public static UploadResponse PrepareResponse(bool success, IPublishedContent media = null)
+        {
+            if (media==null)
+            {
+                return new UploadResponse(0);
+            }
+            else
+            {
+                return new UploadResponse(
+                        success ? 1 : 0,
+                        string.Format("{0}?width=1000&mode=max&format=jpeg&quality=90", media.Url), // - link to image for EditorJS: scale to max width, convert to JPEG with 90 % quality
+                        Udi.Create(Constants.UdiEntityType.Media, media.Key)); // - add Udi to the result, so the frontenders can fetch the "real media" despite of any future changes
+            }
         }
     }
 }

@@ -41,7 +41,7 @@ angular.module("umbraco")
                         config: {
                             endpoints: {
                                 byFile: "/umbraco/backoffice/editorJs/ImageTool/UploadByFile",
-                                byUrl: 'http://localhost:8008/fetchUrl', // Your endpoint that provides uploading by Url
+                                byUrl: "/umbraco/backoffice/editorJs/ImageTool/UploadByUrl"
                             },
                             mediapicker: $scope.openMediaPicker
                         }
@@ -150,7 +150,7 @@ angular.module("umbraco")
         },
 
         $scope.openMediaPicker = function (e) {
-            console.log("$scope.openMediaPicker:", e);
+            //console.log("$scope.openMediaPicker:", e);
             var block = e;
 
             var options = {
@@ -173,23 +173,23 @@ angular.module("umbraco")
             editorService.mediaPicker(options);
         },
 
-        $scope.setMediaFolder = function () {
-            var options = {
-                view: "views/common/infiniteeditors/treepicker/treepicker.html",
-                size: "small",
-                section: "media",
-                treeAlias: "media",
-                multiPicker: false,
-                submit: function (result) {
-                    console.log("setMediaFolder:submit", result);
-                    editorService.close();
-                },
-                close: function () {
-                    editorService.close();
-                }
-            };
-            editorService.contentPicker(options);
-        },
+        //$scope.setMediaFolder = function () {
+        //    var options = {
+        //        view: "views/common/infiniteeditors/treepicker/treepicker.html",
+        //        size: "small",
+        //        section: "media",
+        //        treeAlias: "media",
+        //        multiPicker: false,
+        //        submit: function (result) {
+        //            console.log("setMediaFolder:submit", result);
+        //            editorService.close();
+        //        },
+        //        close: function () {
+        //            editorService.close();
+        //        }
+        //    };
+        //    editorService.contentPicker(options);
+        //},
 
         // load the separate css for the editor to avoid it blocking our JavaScript loading
         assetsService.loadCss("/App_Plugins/editorjs/backoffice.css");

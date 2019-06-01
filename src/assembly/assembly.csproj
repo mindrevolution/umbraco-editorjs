@@ -83,11 +83,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ImageToolController.cs" />
+    <Compile Include="Controllers\ImageToolController.cs" />
     <Compile Include="Helpers\MediaHelper.cs" />
     <Compile Include="Models\UploadResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SettingsController.cs" />
+    <Compile Include="System\Drawing\Image.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
