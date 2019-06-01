@@ -3,8 +3,6 @@ using Umbraco.Web.WebApi;
 using Umbraco.Web.Editors;
 using System.Web.Http;
 using Editorjs.Helpers;
-using Umbraco.Core.Models;
-using Umbraco.Core.Services;
 using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Core;
 using System.Web.Http.Results;
@@ -14,6 +12,8 @@ namespace Editorjs.Controllers
     [Umbraco.Web.Mvc.PluginController("EditorJs"), IsBackOffice]
     public class ImageToolController : UmbracoAuthorizedJsonController
     {
+        public int imageEditorPreviewWidth = 1000;
+
         public ImageToolController() { }
 
         [HttpPost]
@@ -38,7 +38,7 @@ namespace Editorjs.Controllers
                 IPublishedContent media = MediaHelper.AddImageUpload(Services.MediaService, Services.ContentTypeBaseServices, Umbraco, imagefile.FileName, filepath);
 
                 
-                r = new UploadResponse(1, media.Url, Udi.Create(Constants.UdiEntityType.Media, media.Key));
+                r = new UploadResponse(1, string.Format("{0}?width={1}&mode=max", media.Url, imageEditorPreviewWidth), Udi.Create(Constants.UdiEntityType.Media, media.Key));
             }
             else
             {
@@ -56,12 +56,12 @@ namespace Editorjs.Controllers
         public int success { get; set; }
         public UploadResponseFile file { get; set; }
 
-        public UploadResponse(int success, string url, object key)
+        public UploadResponse(int success, string url, object udi)
         {
             this.success = success;
             if (success == 1)
             {
-                this.file = new UploadResponseFile(url, key);
+                this.file = new UploadResponseFile(url, udi);
             }
         }
 
@@ -71,12 +71,12 @@ namespace Editorjs.Controllers
     public class UploadResponseFile
     {
         public string url { get; set; }
-        public string key { get; set; }
+        public string udi { get; set; }
 
-        public UploadResponseFile(string url, object key)
+        public UploadResponseFile(string url, object udi)
         {
             this.url = url;
-            this.key = key.ToString();
+            this.udi = udi.ToString();
         }
     }
 
