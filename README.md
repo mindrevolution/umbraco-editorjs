@@ -2,6 +2,7 @@
 **An Editor.js package for Umbraco 8**
 
 ![Screenshot: Editor.js for Umbraco](screenshot.png)
+#THIS IS A WORK IN PROGRESS#
 
 Based on [Editor.js](https://github.com/codex-team/editor.js). From [mindrevolution](https://www.mindrevolution.com) for [Umbraco](http://www.umbraco.org) with love. Maintained by [Marc Stöcker](https://twitter.com/esn303).
 
@@ -10,12 +11,12 @@ Based on [Editor.js](https://github.com/codex-team/editor.js). From [mindrevolut
 This Umbraco package is for Umbraco 8
 
 **Features**
-- property editor
-- grid editor
-- allows image drag and drop upload to the page
-- allows clipboard pasing of images
-- integrates with the Umbraco media library
-- multi instance support on doc types and in the grid
+- Umbraco Property Editor
+- Umbraco Grid Editor
+- Image drag and drop upload while editing
+- Clipboard pasting of images
+- Integration with the Umbraco media library
+- Multi-instance support on document types as well as in the grid
 
 
 ### Umbraco package installation
