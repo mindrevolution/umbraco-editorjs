@@ -1,5 +1,5 @@
 angular.module("umbraco")
-	.controller("Editorjs.BaseEditor.Controller", [ "$scope", "assetsService", "editorService", "$routeParams", "editorjsSettingsResource",
+    .controller("Editorjs.BaseEditor.Controller", ["$scope", "assetsService", "editorService", "$routeParams", "editorjsSettingsResource",
 	function ($scope, assetsService, editorService, $routeParams, editorjsSettingsResource) {
 
         console.log("init editorjs", $scope.control, $scope.model);
@@ -19,7 +19,7 @@ angular.module("umbraco")
 
         $scope.blocks = [];
 
-        $scope.init = function() {
+        $scope.init = function () {
             // initialize editorjs
             $scope.editorjs = new EditorJS({
                 // build this instance's id
@@ -30,19 +30,20 @@ angular.module("umbraco")
                 tools: {
                     header: {
                         class: Header,
-                        inlineToolbar : true,
+                        inlineToolbar: true,
                         config: {
                             //placeholder: 'Enter a header'
                         }
                     },
 
                     image: {
-                        class: ImageTool,
+                        class: UmbracoMedia,
                         config: {
-                          endpoints: {
-                            byFile: "/umbraco/backoffice/EditorJs/ImageTool/UploadByFile",
-                            byUrl: 'http://localhost:8008/fetchUrl', // Your endpoint that provides uploading by Url
-                          }
+                            endpoints: {
+                                byFile: "/umbraco/backoffice/editorJs/ImageTool/UploadByFile",
+                                byUrl: 'http://localhost:8008/fetchUrl', // Your endpoint that provides uploading by Url
+                            },
+                            mediapicker: $scope.openMediaPicker
                         }
                     },
 
@@ -76,7 +77,7 @@ angular.module("umbraco")
                         class: List,
                         inlineToolbar: true,
                     },
-                    
+
                     table: {
                         class: Table,
                         inlineToolbar: true,
@@ -84,9 +85,9 @@ angular.module("umbraco")
                         //   rows: 2,
                         //   cols: 3,
                         // },
-                      },
+                    },
 
-                      warning: {
+                    warning: {
                         class: Warning,
                         inlineToolbar: true,
                         //shortcut: 'CTRL+SHIFT+W',
@@ -94,24 +95,24 @@ angular.module("umbraco")
                             titlePlaceholder: 'Title',
                             messagePlaceholder: 'Message',
                         },
-                      },
+                    },
 
-                      checklist: {
+                    checklist: {
                         class: Checklist,
                         inlineToolbar: true,
-                      },
+                    },
 
-                      inlineCode: {
+                    inlineCode: {
                         class: InlineCode,
-                      },
+                    },
 
-                      code: CodeTool,
+                    code: CodeTool,
 
-                      delimiter: Delimiter,
+                    delimiter: Delimiter,
 
-                      raw: RawTool,
+                    raw: RawTool,
                 },
-            
+
                 /**
                  * Previously saved data that should be rendered
                  */
@@ -133,7 +134,7 @@ angular.module("umbraco")
             // });
         },
 
-        $scope.fetchEditorData = async function(){
+        $scope.fetchEditorData = async function (){
             try {
                 const editordata = await $scope.editorjs.save();
                 if ($scope.isGridEditor) {
@@ -148,39 +149,47 @@ angular.module("umbraco")
             }
         },
 
-        // $scope.setModule = function(){
+        $scope.openMediaPicker = function (e) {
+            console.log("$scope.openMediaPicker:", e);
+            var block = e;
 
-        //     var dialogData = {
-        //         macroData: $scope.control.value || {
-        //             macroAlias: $scope.control.editor.config && $scope.control.editor.config.macroAlias
-        //               ? $scope.control.editor.config.macroAlias : ""
-        //         }
-        //     };
+            var options = {
+                multiPicker: false,
+                onlyImages: true,
+                disableFolderSelect: true,
+                submit: function (result) {
+                    editorService.close();
+                    var media = result.selection[0];
+                    block.image = {
+                        url: media.file.src + "?width=1000&mode=max&format=jpeg&quality=90",
+                        udi: media.udi
+                    };
+                },
+                close: function () {
+                    editorService.close();
+                }
+            };
 
-        //     var picker = {
-        //         dialogData: dialogData,
-        //         title: "Funktionsbaustein",
-        //         submit: function(model) {
-        //             var macroObject = macroService.collectValueData(model.selectedMacro, model.macroParams, dialogData.renderingEngine);
+            editorService.mediaPicker(options);
+        },
 
-        //             console.log("macroObject", macroObject);
-
-        //             $scope.control.value = {
-        //                 macroAlias: macroObject.macroAlias,
-        //                 macroParamsDictionary: macroObject.macroParamsDictionary
-        //             };
-
-        //             $scope.renderPreview($scope.control.value);
-        //             editorService.close();
-        
-        //         },
-        //         close: function() {
-        //             editorService.close();
-        //         }
-        //     }
-
-        //     editorService.macroPicker(picker);
-        // };
+        $scope.setMediaFolder = function () {
+            var options = {
+                view: "views/common/infiniteeditors/treepicker/treepicker.html",
+                size: "small",
+                section: "media",
+                treeAlias: "media",
+                multiPicker: false,
+                submit: function (result) {
+                    console.log("setMediaFolder:submit", result);
+                    editorService.close();
+                },
+                close: function () {
+                    editorService.close();
+                }
+            };
+            editorService.contentPicker(options);
+        },
 
         // load the separate css for the editor to avoid it blocking our JavaScript loading
         assetsService.loadCss("/App_Plugins/editorjs/backoffice.css");

@@ -1,0 +1,44 @@
+{
+  "name": "@editorjs-for-umbraco/umbracomedia",
+  "version": "0.1.0",
+  "keywords": [
+    "tool",
+    "image",
+    "editor.js",
+    "editorjs",
+    "Umbraco"
+  ],
+  "description": "Umbraco Media Image Tool for Editor.js",
+  "license": "MIT",
+  "repository": "https://github.com/mindrevolution/Editor.js-for-Umbraco",
+  "main": "./bundle.js",
+  "scripts": {
+    "build": "webpack --mode production",
+    "build:dev": "webpack --mode development --watch"
+  },
+  "author": {
+    "name": "mindrevolution",
+    "email": "stuttgart@mindrevolution.com"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.3.4",
+    "@babel/plugin-transform-runtime": "^7.2.0",
+    "@babel/preset-env": "^7.3.4",
+    "@babel/runtime": "^7.2.0",
+    "@codexteam/ajax": "^4.1.0",
+    "babel-loader": "^8.0.5",
+    "css-loader": "^1.0.0",
+    "eslint": "^5.9.0",
+    "eslint-config-codex": "github:codex-team/eslint-config",
+    "eslint-loader": "^2.1.1",
+    "formidable": "^1.2.1",
+    "postcss-loader": "^3.0.0",
+    "postcss-nested": "^4.1.0",
+    "postcss-nested-ancestors": "^2.0.0",
+    "request": "^2.88.0",
+    "style-loader": "^0.21.0",
+    "svg-inline-loader": "^0.8.0",
+    "webpack": "^4.32.2",
+    "webpack-cli": "^3.3.2"
+  }
+}
