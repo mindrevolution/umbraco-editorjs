@@ -87,8 +87,8 @@
     <Compile Include="Helpers\MediaHelper.cs" />
     <Compile Include="Models\UploadResponse.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SettingsController.cs" />
-    <Compile Include="System\Drawing\Image.cs" />
+    <Compile Include="Controllers\SettingsController.cs" />
+    <Compile Include="PropertyValueConverters\Editorjs.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

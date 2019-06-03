@@ -58,6 +58,7 @@ import Uploader from './uploader';
  * @property {function(File): Promise.<UploadResponseFormat>} [uploader.uploadByFile] - method that upload image by File
  * @property {function(string): Promise.<UploadResponseFormat>} [uploader.uploadByUrl] - method that upload image by URL
  * @property {object} [mediapicker] - umbraco media picker function (replaces file select)
+ * @property {object} [afterUpload] - callback after the upload of a media was successful
  */
 
 /**
@@ -104,7 +105,8 @@ export default class UmbracoMedia {
       captionPlaceholder: config.captionPlaceholder || 'Caption',
       buttonContent: config.buttonContent || '',
       uploader: config.uploader || undefined,
-      mediapicker: config.mediapicker || undefined
+      mediapicker: config.mediapicker || undefined,
+      afterUpload: config.afterUpload || undefined
     };
 
     /**
@@ -307,6 +309,8 @@ export default class UmbracoMedia {
   onUpload(response) {
     if (response.success && response.file) {
       this.image = response.file;
+      // - notify successful upload
+      this.config.afterUpload(response.file.udi);
     } else {
       this.uploadingFailed('incorrect response: ' + JSON.stringify(response));
     }

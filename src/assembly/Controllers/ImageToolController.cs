@@ -74,5 +74,12 @@ namespace Editorjs.Controllers
 
             return Json(r);
         }
+
+        [HttpGet]
+        public bool MoveMedia(Udi media, Udi folder)
+        {
+            // move to given parent
+            return MediaHelper.MoveMedia(Services.MediaService, Services.EntityService, media, folder);
+        }
     }
 }

@@ -1,6 +1,6 @@
 angular.module("umbraco")
-    .controller("Editorjs.BaseEditor.Controller", ["$scope", "assetsService", "editorService", "$routeParams", "editorjsSettingsResource",
-	function ($scope, assetsService, editorService, $routeParams, editorjsSettingsResource) {
+    .controller("Editorjs.BaseEditor.Controller", ["$scope", "assetsService", "editorService", "$routeParams", "editorjsSettingsResource", "editorjsImageToolResource",
+        function ($scope, assetsService, editorService, $routeParams, editorjsSettingsResource, editorjsImageToolResource) {
 
         console.log("init editorjs", $scope.control, $scope.model);
 
@@ -43,7 +43,8 @@ angular.module("umbraco")
                                 byFile: "/umbraco/backoffice/editorJs/ImageTool/UploadByFile",
                                 byUrl: "/umbraco/backoffice/editorJs/ImageTool/UploadByUrl"
                             },
-                            mediapicker: $scope.openMediaPicker
+                            mediapicker: $scope.openMediaPicker,
+                            afterUpload: $scope.setMediaFolder
                         }
                     },
 
@@ -173,23 +174,39 @@ angular.module("umbraco")
             editorService.mediaPicker(options);
         },
 
-        //$scope.setMediaFolder = function () {
-        //    var options = {
-        //        view: "views/common/infiniteeditors/treepicker/treepicker.html",
-        //        size: "small",
-        //        section: "media",
-        //        treeAlias: "media",
-        //        multiPicker: false,
-        //        submit: function (result) {
-        //            console.log("setMediaFolder:submit", result);
-        //            editorService.close();
-        //        },
-        //        close: function () {
-        //            editorService.close();
-        //        }
-        //    };
-        //    editorService.contentPicker(options);
-        //},
+            $scope.setMediaFolder = function (udi) {
+            console.log("setMediaFolder", udi);
+
+            var mediaUdi = udi;
+
+            var options = {
+                multiPicker: false,
+                onlyImages: false,
+                disableFolderSelect: false,
+                title: "Sort media into folder?",
+                submit: function (result) {
+                    editorService.close();
+                    var folder = result.selection[0];
+                    if (folder !== null) {
+                        // - move media to this folder!
+                        var folderUdi = folder.udi;
+                        console.log("MOVE MEDIA", mediaUdi, folderUdi, folder);
+
+                        editorjsImageToolResource.moveMedia(mediaUdi, folderUdi)
+                            .then(function () {
+                                console.log("media moved", mediaUdi, folder, folderUdi);
+                            }, function (err) {
+                                console.error("unable to move media:" + err.data.Message, mediaUdi, folder, folderUdi);
+                            });
+                    }
+                },
+                close: function () {
+                    editorService.close();
+                }
+            };
+
+            editorService.mediaPicker(options);
+        },
 
         // load the separate css for the editor to avoid it blocking our JavaScript loading
         assetsService.loadCss("/App_Plugins/editorjs/backoffice.css");

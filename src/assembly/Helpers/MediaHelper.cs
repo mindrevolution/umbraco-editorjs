@@ -124,5 +124,27 @@ namespace Editorjs.Helpers
                         Udi.Create(Constants.UdiEntityType.Media, media.Key)); // - add Udi to the result, so the frontenders can fetch the "real media" despite of any future changes
             }
         }
+
+        public static bool MoveMedia(IMediaService mediaService, IEntityService entityService, Udi media, Udi folder)
+        {
+             bool success = false;
+
+            try
+            {
+                // - this is RIDICULOUS! Why no .key on Udi?
+                var m = mediaService.GetById(entityService.GetId(media).Result);
+                var f = mediaService.GetById(entityService.GetId(folder).Result);
+                if (!f.ContentType.Alias.InvariantEquals("folder"))
+                {
+                    // go one up!
+                    f = mediaService.GetById(f.ParentId);
+                }
+                var r = _mediaService.Move(m, f.Id);
+                success = r.Result.Success;
+            }
+            catch { }
+
+            return success;
+        }
     }
 }
