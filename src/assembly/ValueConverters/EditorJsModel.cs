@@ -18,7 +18,12 @@ namespace Our.Umbraco.EditorJs.ValueConverters
             public string Type { get; set; }
 
             [JsonProperty("data")]
-            public object Data { get; set; }
+            public JObject Data { get; set; }
+
+            public override string ToString()
+            {
+                return JsonConvert.SerializeObject(this, Formatting.Indented);
+            }
         }
 
         public override string ToString()
