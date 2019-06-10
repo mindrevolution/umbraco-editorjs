@@ -1,38 +1,38 @@
-using System.Web;
-using Umbraco.Web.WebApi;
-using Umbraco.Web.Editors;
-using System.Web.Http;
-using Editorjs.Helpers;
-using Umbraco.Core.Models.PublishedContent;
-using Umbraco.Core;
-using System.Web.Http.Results;
-using Editorjs.Models;
+using System;
 using System.IO;
+using System.Web;
+using System.Web.Http;
+using System.Web.Http.Results;
 using Newtonsoft.Json;
+using Our.Umbraco.EditorJs.Helpers;
+using Our.Umbraco.EditorJs.Models;
+using Umbraco.Core;
+using Umbraco.Core.IO;
+using Umbraco.Web.Editors;
+using Umbraco.Web.Mvc;
+using Umbraco.Web.WebApi;
 
-namespace Editorjs.Controllers
+namespace Our.Umbraco.EditorJs.Controllers
 {
-    [Umbraco.Web.Mvc.PluginController("EditorJs"), IsBackOffice]
+    [PluginController("EditorJs"), IsBackOffice]
     public class ImageToolController : UmbracoAuthorizedJsonController
     {
-        public ImageToolController() { }
-
         [HttpPost]
         // - /umbraco/backoffice/EditorJs/ImageTool/UploadByFile
         public JsonResult<UploadResponse> UploadByFile()
         {
-            UploadResponse r = new UploadResponse(0);
+            var r = new UploadResponse(0);
             var ctx = HttpContext.Current;
             var request = ctx.Request;
             var imagefile = request.Files["image"];
             if (imagefile != null)
             {
                 // - save uploaded file to the default upload-temp of Umbraco
-                string tempfile = string.Format("/App_Data/TEMP/FileUploads/{0}{1}", System.Guid.NewGuid(), System.IO.Path.GetExtension(imagefile.FileName));
-                string filepath = ctx.Server.MapPath(tempfile);
+                var tempfile = string.Format("/App_Data/TEMP/FileUploads/{0}{1}", Guid.NewGuid(), Path.GetExtension(imagefile.FileName));
+                var filepath = IOHelper.MapPath(tempfile);
 
                 imagefile.SaveAs(filepath);
-                IPublishedContent media = MediaHelper.AddImageByFile(Services.MediaService, Services.ContentTypeBaseServices, Umbraco, imagefile.FileName, filepath);
+                var media = MediaHelper.AddImageByFile(Services.MediaService, Services.ContentTypeBaseServices, Umbraco, imagefile.FileName, filepath);
 
                 r = MediaHelper.PrepareResponse(true, media);
             }
@@ -46,27 +46,26 @@ namespace Editorjs.Controllers
         // - /umbraco/backoffice/EditorJs/ImageTool/UploadByUrl
         public JsonResult<UploadResponse> UploadByUrl()
         {
-            UploadResponse r = new UploadResponse(0);
+            var r = new UploadResponse(0);
             var ctx = HttpContext.Current;
             var request = ctx.Request;
             string payload;
-            using (Stream receiveStream = request.InputStream)
+
+            using (var receiveStream = request.InputStream)
+            using (var readStream = new StreamReader(receiveStream, request.ContentEncoding))
             {
-                using (StreamReader readStream = new StreamReader(receiveStream, request.ContentEncoding))
-                {
-                    payload = readStream.ReadToEnd();
-                }
+                payload = readStream.ReadToEnd();
             }
 
-            if (!string.IsNullOrWhiteSpace(payload))
+            if (string.IsNullOrWhiteSpace(payload) == false)
             {
-                dynamic plobj = JsonConvert.DeserializeObject(payload);
-                string imageurl = (string)plobj.url;
+                var plobj = JsonConvert.DeserializeAnonymousType(payload, new { url = default(string) });
+                var imageurl = plobj.url;
 
-                if (!string.IsNullOrEmpty(imageurl))
+                if (string.IsNullOrEmpty(imageurl) == false)
                 {
                     // - download the link's file content to the default upload-temp of Umbraco
-                    IPublishedContent media = MediaHelper.AddImageByUrl(Services.MediaService, Services.ContentTypeBaseServices, Umbraco, imageurl);
+                    var media = MediaHelper.AddImageByUrl(Services.MediaService, Services.ContentTypeBaseServices, Umbraco, imageurl);
 
                     r = MediaHelper.PrepareResponse(true, media);
                 }

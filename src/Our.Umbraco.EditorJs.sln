@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.539
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.452
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "www", "www\", "{EE378DE6-8B82-4156-BE3C-28E8DE639144}"
 	ProjectSection(WebsiteProperties) = preProject
@@ -24,7 +24,7 @@ Project("{E24C65DC-7377-472B-9ABA-BC803B73C61A}") = "www", "www\", "{EE378DE6-8B
 		SlnRelativePath = "www\"
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "assembly", "assembly\assembly.csproj", "{F66B9549-AD5D-4D96-A481-DCA5E89D5EA6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Our.Umbraco.EditorJs", "assembly\Our.Umbraco.EditorJs.csproj", "{F66B9549-AD5D-4D96-A481-DCA5E89D5EA6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,9 +33,7 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{EE378DE6-8B82-4156-BE3C-28E8DE639144}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EE378DE6-8B82-4156-BE3C-28E8DE639144}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EE378DE6-8B82-4156-BE3C-28E8DE639144}.Release|Any CPU.ActiveCfg = Debug|Any CPU
-		{EE378DE6-8B82-4156-BE3C-28E8DE639144}.Release|Any CPU.Build.0 = Debug|Any CPU
 		{F66B9549-AD5D-4D96-A481-DCA5E89D5EA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F66B9549-AD5D-4D96-A481-DCA5E89D5EA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F66B9549-AD5D-4D96-A481-DCA5E89D5EA6}.Release|Any CPU.ActiveCfg = Release|Any CPU

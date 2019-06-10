@@ -1,15 +1,15 @@
-﻿using Umbraco.Core;
+﻿using System.IO;
+using System.Linq;
+using System.Net;
+using System.Web;
+using Our.Umbraco.EditorJs.Models;
+using Umbraco.Core;
 using Umbraco.Core.Models;
+using Umbraco.Core.Models.PublishedContent;
 using Umbraco.Core.Services;
 using Umbraco.Web;
-using System.Linq;
-using System.IO;
-using Umbraco.Core.Models.PublishedContent;
-using System.Net;
-using Editorjs.Models;
-using System.Web;
 
-namespace Editorjs.Helpers
+namespace Our.Umbraco.EditorJs.Helpers
 {
     class MediaHelper
     {
@@ -112,7 +112,7 @@ namespace Editorjs.Helpers
 
         public static UploadResponse PrepareResponse(bool success, IPublishedContent media = null)
         {
-            if (media==null)
+            if (media == null)
             {
                 return new UploadResponse(0);
             }
@@ -127,7 +127,7 @@ namespace Editorjs.Helpers
 
         public static bool MoveMedia(IMediaService mediaService, IEntityService entityService, Udi media, Udi folder)
         {
-             bool success = false;
+            bool success = false;
 
             try
             {

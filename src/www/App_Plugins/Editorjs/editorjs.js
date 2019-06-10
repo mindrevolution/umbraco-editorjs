@@ -1,31 +1,32 @@
-angular.module("umbraco")
-    .controller("Editorjs.BaseEditor.Controller", ["$scope", "assetsService", "editorService", "$routeParams", "editorjsSettingsResource", "editorjsImageToolResource",
-        function ($scope, assetsService, editorService, $routeParams, editorjsSettingsResource, editorjsImageToolResource) {
+angular.module("umbraco").controller("Our.Umbraco.Editorjs.Controller", [
+    "$scope",
+    "assetsService",
+    "editorService",
+    "Our.Umbraco.Editorjs.Resources.ImageTool",
+    function ($scope, assetsService, editorService, editorjsImageToolResource) {
 
-        console.log("init editorjs", $scope.control, $scope.model);
+        var defaultConfig = { blocks: [] };
+        var config = angular.extend({}, defaultConfig, $scope.model.config);
 
-        $scope.isGridEditor = $scope.control !== undefined;
-        $scope.isPropertyEditor = !$scope.isGridEditor;
+        var vm = this;
 
-        // - build the instance id
-        $scope.instanceId = "editorjs_";
-        if ($scope.isGridEditor) {
-            $scope.instanceId += $scope.control.$uniqueId;
-        } else {
-            $scope.instanceId += $scope.$id;
-        }
+        vm.layout = $scope.model.hideLabel ? "umb-editorjs-80" : "umb-editorjs-70";
+        vm.isGridEditor = $scope.control !== undefined;
 
-        console.info("editorjs #" + $scope.instanceId, "$scope.isGridEditor", $scope.isGridEditor, "$scope.isPropertyEditor", $scope.isPropertyEditor);
+        // set the Editor.js instance id
+        vm.editorId = "editorjs_" + (vm.isGridEditor ? $scope.control.$uniqueId : $scope.model.alias);
+        console.log("editorjs.init", vm.editorId, vm.isGridEditor, ($scope.model || $scope.control));
 
-        $scope.blocks = [];
+        vm.editorjs = null;
 
-        $scope.init = function () {
+        function init() {
+
             // initialize editorjs
-            $scope.editorjs = new EditorJS({
+            vm.editorjs = new EditorJS({
                 // build this instance's id
-                holder: $scope.instanceId,
+                holder: vm.editorId,
                 onChange: () => {
-                    $scope.fetchEditorData();
+                    fetchEditorData();
                 },
                 tools: {
                     header: {
@@ -43,8 +44,8 @@ angular.module("umbraco")
                                 byFile: "/umbraco/backoffice/editorJs/ImageTool/UploadByFile",
                                 byUrl: "/umbraco/backoffice/editorJs/ImageTool/UploadByUrl"
                             },
-                            mediapicker: $scope.openMediaPicker,
-                            afterUpload: $scope.setMediaFolder
+                            mediapicker: openMediaPicker,
+                            afterUpload: setMediaFolder
                         }
                     },
 
@@ -82,10 +83,10 @@ angular.module("umbraco")
                     table: {
                         class: Table,
                         inlineToolbar: true,
-                        // config: {
-                        //   rows: 2,
-                        //   cols: 3,
-                        // },
+                        config: {
+                            rows: 2,
+                            cols: 3,
+                        },
                     },
 
                     warning: {
@@ -114,44 +115,41 @@ angular.module("umbraco")
                     raw: RawTool,
                 },
 
-                /**
-                 * Previously saved data that should be rendered
-                 */
-                data: $scope.isGridEditor ? $scope.control.value : $scope.model.value
+                // Previously saved data that should be rendered
+                data: vm.isGridEditor ? $scope.control.value : $scope.model.value
             });
 
-            //console.log("$scope.editorjs", $scope.editorjs);
+            //console.log("editorjs", vm.editorjs);
 
             // $scope.$on("formSubmitting", function(e, args) {
             //     //console.log("formSubmitting", e, args, $scope.control.value);
             //     try {
-            //         //const editordata = await $scope.editorjs.save();
+            //         //const editordata = await vm.editorjs.save();
             //         const editordata = $scope.getEditorData();
             //         $scope.control.value = editordata;
-            //         console.log("$scope.editorjs.save()", editordata);
+            //         console.log("vm.editorjs.save()", editordata);
             //     } catch (error) {
             //         console.log(error);
             //     }
             // });
-        },
+        };
 
-        $scope.fetchEditorData = async function (){
+        async function fetchEditorData() {
             try {
-                const editordata = await $scope.editorjs.save();
-                if ($scope.isGridEditor) {
+                const editordata = await vm.editorjs.save();
+                if (vm.isGridEditor) {
                     $scope.control.value = editordata;
                 } else {
                     $scope.model.value = editordata;
                 }
-
-                //console.log("$scope.editorjs.save()", editordata);
+                //console.log("vm.editorjs.save()", editordata);
             } catch (error) {
                 console.error("unable to fetch Editor.js data", error);
             }
-        },
+        };
 
-        $scope.openMediaPicker = function (e) {
-            //console.log("$scope.openMediaPicker:", e);
+        function openMediaPicker(e) {
+            //console.log("openMediaPicker:", e);
             var block = e;
 
             var options = {
@@ -172,9 +170,9 @@ angular.module("umbraco")
             };
 
             editorService.mediaPicker(options);
-        },
+        };
 
-            $scope.setMediaFolder = function (udi) {
+        function setMediaFolder(udi) {
             console.log("setMediaFolder", udi);
 
             var mediaUdi = udi;
@@ -206,32 +204,43 @@ angular.module("umbraco")
             };
 
             editorService.mediaPicker(options);
-        },
+        };
 
         // load the separate css for the editor to avoid it blocking our JavaScript loading
         assetsService.loadCss("/App_Plugins/editorjs/backoffice.css");
 
         // - load blocks
-        editorjsSettingsResource.getGridEditorBlocksConfiguration().then(function (response) {
-            var cfg = {
-                blocks: response.data
-            };
+        if (config.blocks.length > 0) {
+            var blocksToLoad = [];
 
-            // - existing assigments? Apply them (selected: true/false?)
-            if (cfg.blocks !== null && cfg.blocks.length > 0) {
-                angular.forEach(cfg.blocks, function (block, index) {
-                    // active?!!? TODO! ****************************************************************************************************
-                    $scope.blocks.push("/App_Plugins/editorjs/Lib/blocks/" + block.Filename);
+            _.each(config.blocks, function (block) {
+                blocksToLoad.push("/App_Plugins/editorjs/Lib/blocks/" + block);
+            });
+
+            assetsService.load(blocksToLoad).then(function () {
+                // - done loading the blocks ... init editor!
+                init();
+            });
+        }
+
+    }
+]);
+
+angular.module("umbraco.resources").factory("Our.Umbraco.Editorjs.Resources.ImageTool", [
+    "$q",
+    "$http",
+    function ($q, $http) {
+        return {
+            moveMedia: function (mediaUdi, folderUdi) {
+                return $http({
+                    url: "backoffice/EditorJs/ImageTool/MoveMedia",
+                    method: "GET",
+                    params: {
+                        "media": mediaUdi,
+                        "folder": folderUdi
+                    }
                 });
             }
-
-            // - load blocks
-            assetsService.load($scope.blocks).then(function(){
-                //console.log("$scope.blocks loaded", $scope.blocks);
-
-                // - done loading the blocks ... init editor!
-                $scope.init();
-            });
-        });
-
-    }]);
+        };
+    }
+]);

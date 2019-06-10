@@ -1,0 +1,10 @@
+<div class="umb-property-editor umb-checkboxlist" ng-controller="Our.Umbraco.Editorjs.SettingsBlocks.Controller as vm">
+    <ul class="unstyled checkbox no-indent">
+        <li ng-repeat="item in vm.items">
+            <label>
+                <input type="checkbox" ng-change="vm.changed(item)" ng-model="item.checked" value="{{item.value}}" />
+                <span ng-bind-html="item.name"></span>
+            </label>
+        </li>
+    </ul>
+</div>
