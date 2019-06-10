@@ -1,0 +1,8 @@
+﻿@inherits UmbracoViewPage<Our.Umbraco.EditorJs.ValueConverters.EditorJsModel.Block>
+@{
+    var url = Model.Data["link"].ToString();
+    // there's also a "meta" property, but I had no data for that.
+}
+<div class="alert alert-info" role="alert">
+    <a href="@url" target="_blank">@url</a>
+</div>

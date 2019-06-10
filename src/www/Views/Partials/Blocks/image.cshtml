@@ -1,0 +1,17 @@
+﻿@inherits UmbracoViewPage<Our.Umbraco.EditorJs.ValueConverters.EditorJsModel.Block>
+@{
+    var file = Model.Data["file"];
+    var url = file["url"].ToString();
+    var udi = file["udi"].ToString();
+
+    var media = Umbraco.Media(udi);
+
+    var caption = Model.Data["caption"].ToString();
+    var withBorder = Model.Data.Value<bool>("withBorder");
+    var stretched = Model.Data.Value<bool>("stretched");
+    var withBackground = Model.Data.Value<bool>("withBackground");
+}
+<figure class="figure">
+    <img src="@media.Url" alt="@media.Name" class="figure-img img-fluid rounded">
+    <figcaption class="figure-caption">@caption</figcaption>
+</figure>

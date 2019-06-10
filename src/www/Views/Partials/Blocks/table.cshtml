@@ -1,0 +1,17 @@
+﻿@inherits UmbracoViewPage<Our.Umbraco.EditorJs.ValueConverters.EditorJsModel.Block>
+@{
+    var table = Model.Data["content"];
+}
+<table class="table table-bordered table-dark table-hover table-striped">
+    <tbody>
+        @foreach (var row in table)
+        {
+            <tr>
+                @foreach (var cell in row)
+                {
+                    <td>@cell</td>
+                }
+            </tr>
+        }
+    </tbody>
+</table>

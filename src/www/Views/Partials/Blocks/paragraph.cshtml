@@ -1,0 +1,5 @@
+﻿@inherits UmbracoViewPage<Our.Umbraco.EditorJs.ValueConverters.EditorJsModel.Block>
+@{
+    var text = new HtmlString(Model.Data["text"].ToString());
+}
+<p>@text</p>

@@ -1,0 +1,9 @@
+﻿@inherits UmbracoViewPage<Our.Umbraco.EditorJs.ValueConverters.EditorJsModel.Block>
+@{
+    var title = new HtmlString(Model.Data["title"].ToString());
+    var message = new HtmlString(Model.Data["message"].ToString());
+}
+<div class="alert alert-warning" role="alert">
+    <h4 class="alert-heading">@title</h4>
+    <p class="mb-0">@message</p>
+</div>

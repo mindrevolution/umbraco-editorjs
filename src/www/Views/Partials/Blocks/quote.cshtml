@@ -1,0 +1,10 @@
+﻿@inherits UmbracoViewPage<Our.Umbraco.EditorJs.ValueConverters.EditorJsModel.Block>
+@{
+    var quote = new HtmlString(Model.Data["text"].ToString());
+    var caption = new HtmlString(Model.Data["caption"].ToString());
+    var alignment = Model.Data["alignment"].ToString();
+}
+<blockquote class="blockquote text-@alignment">
+    <p  class="mb-0">@quote</p>
+    <footer class="blockquote-footer"><cite>@caption</cite></footer>
+</blockquote>
