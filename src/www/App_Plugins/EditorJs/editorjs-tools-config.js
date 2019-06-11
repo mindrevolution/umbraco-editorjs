@@ -79,7 +79,7 @@
             "config": {
                 "class": "LinkTool",
                 "config": {
-                    "endpoint": 'http://localhost:8008/fetchUrl', // Your backend endpoint for url data fetching
+                    "endpoint": '/umbraco/backoffice/EditorJs/LinkTool/FetchUrl', // Your backend endpoint for url data fetching
                 }
             }
         },
@@ -140,8 +140,8 @@
                 "class": "UmbracoMedia",
                 "config": {
                     "endpoints": {
-                        "byFile": "/umbraco/backoffice/editorJs/ImageTool/UploadByFile",
-                        "byUrl": "/umbraco/backoffice/editorJs/ImageTool/UploadByUrl"
+                        "byFile": "/umbraco/backoffice/EditorJs/ImageTool/UploadByFile",
+                        "byUrl": "/umbraco/backoffice/EditorJs/ImageTool/UploadByUrl"
                     },
                     "mediapicker": "openMediaPicker",
                     "afterUpload": "setMediaFolder"

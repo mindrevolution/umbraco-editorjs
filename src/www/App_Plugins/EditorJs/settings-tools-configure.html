@@ -13,10 +13,6 @@
             <umb-box ng-if="model.value !== undefined">
                 <umb-box-content class="block-form">
                     <div umb-ace-editor="vm.aceOptions" model="model.value"></div>
-                    <details open>
-                        <summary>Debug</summary>
-                        <pre>{{model.value | json}}</pre>
-                    </details>
                 </umb-box-content>
             </umb-box>
 
