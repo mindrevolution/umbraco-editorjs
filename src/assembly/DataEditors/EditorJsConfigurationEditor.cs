@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Newtonsoft.Json;
 using Umbraco.Core;
 using Umbraco.Core.IO;
 using Umbraco.Core.PropertyEditors;
@@ -11,52 +12,54 @@ namespace Our.Umbraco.EditorJs.DataEditors
     {
         public EditorJsConfigurationEditor()
         {
-            var items = GetBlocks();
+            var tools = GetTools();
 
             Fields.Add(new ConfigurationField
             {
-                Name = "Blocks",
-                Description = "Configure the blocks available.",
-                Key = "blocks",
-                View = IOHelper.ResolveUrl("~/App_Plugins/Editorjs/settings-blocks.html"),
+                Name = "Tools",
+                Description = "Select the tools to configure for the editor.",
+                Key = "tools",
+                View = IOHelper.ResolveUrl("~/App_Plugins/Editorjs/settings-tools.html"),
                 Config = new Dictionary<string, object>
                 {
-                    { "items", items }
+                    { "tools", tools }
                 }
             });
         }
 
-        private List<object> GetBlocks()
+        private Dictionary<string, IEnumerable<Tool>> GetTools()
         {
-            var items = new List<object>();
+            var path = IOHelper.MapPath("~/App_Plugins/Editorjs/editorjs-tools-config.js");
+            if (File.Exists(path) == false)
+                return null; // TODO: What to do here?
 
-            var path = IOHelper.MapPath("~/App_Plugins/Editorjs/Lib/blocks/");
-            var files = Directory
-                .GetFiles(path, "*.js", SearchOption.TopDirectoryOnly)
-                .OrderBy(x => x);
+            var contents = File.ReadAllText(path);
+            if (string.IsNullOrWhiteSpace(contents))
+                return null; // TODO: What to do here?
 
-            foreach (var file in files)
-            {
-                // - use ".min" variant if existing (and omit non-minified version of the file in that event)
-                if (files.Contains(file.Replace(".js", ".min.js")))
-                    continue;
-
-                var filename = Path.GetFileName(file);
-
-                var displayName = filename
-                    .Replace(".min.js", string.Empty)
-                    .Replace(".js", string.Empty)
-                    .ToFirstUpperInvariant()
-                    .SplitPascalCasing();
-
-                items.Add(new
-                {
-                    name = displayName,
-                    value = filename
-                });
-            }
-
-            return items;
+            return JsonConvert.DeserializeObject<Dictionary<string, IEnumerable<Tool>>>(contents);
         }
+
+        public class Tool
+        {
+            [JsonProperty("key")]
+            public string Key { get; set; }
+
+            [JsonProperty("name")]
+            public string Name { get; set; }
+
+            [JsonProperty("description")]
+            public string Description { get; set; }
+
+            [JsonProperty("path")]
+            public string Path { get; set; }
+
+            [JsonProperty("config")]
+            public object Config { get; set; }
+
+            [JsonProperty("enabled")]
+            public bool Enabled { get; set; }
+        }
+
     }
 }

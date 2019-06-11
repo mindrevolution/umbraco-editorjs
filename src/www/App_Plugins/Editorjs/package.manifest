@@ -5,7 +5,10 @@
             "name": "Editor.js",
             "view": "/App_Plugins/EditorJs/editorjs.html",
             //"render": "/app_plugins/yourpackage/custom-render.cshtml",
-            "icon": "icon-list"
+            "icon": "icon-list",
+            "config": {
+                "tools": []
+            }
         }
     ]
 }

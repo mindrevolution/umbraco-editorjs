@@ -2,150 +2,93 @@ angular.module("umbraco").controller("Our.Umbraco.Editorjs.Controller", [
     "$scope",
     "assetsService",
     "editorService",
+    "umbRequestHelper",
     "Our.Umbraco.Editorjs.Resources.ImageTool",
-    function ($scope, assetsService, editorService, editorjsImageToolResource) {
+    function ($scope, assetsService, editorService, umbRequestHelper, editorjsImageToolResource) {
 
-        var defaultConfig = { blocks: [] };
+        var defaultConfig = { tools: {} };
         var config = angular.extend({}, defaultConfig, $scope.model.config);
 
         var vm = this;
 
-        vm.layout = $scope.model.hideLabel ? "umb-editorjs-80" : "umb-editorjs-70";
-        vm.isGridEditor = $scope.control !== undefined;
-
-        // set the Editor.js instance id
-        vm.editorId = "editorjs_" + (vm.isGridEditor ? $scope.control.$uniqueId : $scope.model.alias);
-        console.log("editorjs.init", vm.editorId, vm.isGridEditor, ($scope.model || $scope.control));
-
-        vm.editorjs = null;
-
         function init() {
 
-            // initialize editorjs
-            vm.editorjs = new EditorJS({
-                // build this instance's id
-                holder: vm.editorId,
-                onChange: () => {
-                    fetchEditorData();
-                },
-                tools: {
-                    header: {
-                        class: Header,
-                        inlineToolbar: true,
-                        config: {
-                            //placeholder: 'Enter a header'
+            vm.editorjs = null;
+            vm.layout = $scope.model.hideLabel ? "umb-editorjs-80" : "umb-editorjs-70";
+            vm.isGridEditor = $scope.control !== undefined;
+
+            // set the Editor.js instance id
+            vm.editorId = "editorjs_" + (vm.isGridEditor ? $scope.control.$uniqueId : $scope.model.alias);
+            console.log("editorjs.init", vm.editorId, vm.isGridEditor, ($scope.model || $scope.control));
+
+            // load the separate css for the editor to avoid it blocking our JavaScript loading
+            assetsService.loadCss("/App_Plugins/editorjs/backoffice.css");
+
+            // - load blocks
+            if (_.isEmpty(config.tools) === false) {
+                var toolScripts = [],
+                    toolsConfig = {};
+
+                _.each(config.tools, function (tool) {
+                    if (tool.enabled) {
+                        toolScripts.push(umbRequestHelper.convertVirtualToAbsolutePath(tool.path));
+                    }
+                });
+
+                assetsService.load(toolScripts).then(function () {
+
+                    // - configure the blocks - this can only be done AFTER the scripts are loaded.
+                    for (var tool in config.tools) {
+
+                        if (config.tools[tool].enabled === false) {
+                            continue;
                         }
-                    },
 
-                    image: {
-                        class: UmbracoMedia,
-                        config: {
-                            endpoints: {
-                                byFile: "/umbraco/backoffice/editorJs/ImageTool/UploadByFile",
-                                byUrl: "/umbraco/backoffice/editorJs/ImageTool/UploadByUrl"
-                            },
-                            mediapicker: openMediaPicker,
-                            afterUpload: setMediaFolder
+                        toolsConfig[tool] = angular.copy(config.tools[tool].config);
+
+                        if (typeof toolsConfig[tool].class === "string" && _.has(window, toolsConfig[tool].class)) {
+                            toolsConfig[tool].class = window[toolsConfig[tool].class];
                         }
-                    },
 
-                    quote: {
-                        class: Quote,
-                        inlineToolbar: true,
-                        //shortcut: 'CMD+SHIFT+O',
-                        config: {
-                            quotePlaceholder: 'Enter a quote',
-                            captionPlaceholder: 'Quote\'s author',
+                        if (tool === "image") {
+                            // NOTE: There are other functions that I had to stringify ::facepalm::
+                            // I'll need to figure out how to deal with this properly. [LK]
+                            toolsConfig[tool].config.mediapicker = openMediaPicker;
+                            toolsConfig[tool].config.afterUpload = setMediaFolder;
                         }
-                    },
+                    }
 
-                    Marker: {
-                        class: Marker
-                    },
+                    // - done loading the blocks ... init editor!
+                    initEditorJs(toolsConfig);
+                });
+            }
 
-                    linkTool: {
-                        class: LinkTool,
-                        config: {
-                            endpoint: 'http://localhost:8008/fetchUrl', // Your backend endpoint for url data fetching
-                        }
-                    },
-
-                    embed: {
-                        class: Embed,
-                        inlineToolbar: true
-                    },
-
-                    list: {
-                        class: List,
-                        inlineToolbar: true,
-                    },
-
-                    table: {
-                        class: Table,
-                        inlineToolbar: true,
-                        config: {
-                            rows: 2,
-                            cols: 3,
-                        },
-                    },
-
-                    warning: {
-                        class: Warning,
-                        inlineToolbar: true,
-                        //shortcut: 'CTRL+SHIFT+W',
-                        config: {
-                            titlePlaceholder: 'Title',
-                            messagePlaceholder: 'Message',
-                        },
-                    },
-
-                    checklist: {
-                        class: Checklist,
-                        inlineToolbar: true,
-                    },
-
-                    inlineCode: {
-                        class: InlineCode,
-                    },
-
-                    code: CodeTool,
-
-                    delimiter: Delimiter,
-
-                    raw: RawTool,
-                },
-
-                // Previously saved data that should be rendered
-                data: vm.isGridEditor ? $scope.control.value : $scope.model.value
-            });
-
-            //console.log("editorjs", vm.editorjs);
-
-            // $scope.$on("formSubmitting", function(e, args) {
-            //     //console.log("formSubmitting", e, args, $scope.control.value);
-            //     try {
-            //         //const editordata = await vm.editorjs.save();
-            //         const editordata = $scope.getEditorData();
-            //         $scope.control.value = editordata;
-            //         console.log("vm.editorjs.save()", editordata);
-            //     } catch (error) {
-            //         console.log(error);
-            //     }
-            // });
         };
 
-        async function fetchEditorData() {
+        function initEditorJs(blocksConfig) {
+            vm.editorjs = new EditorJS({
+                holder: vm.editorId,
+                onChange: () => {
+                    getEditorData();
+                },
+                tools: blocksConfig,
+                data: vm.isGridEditor ? $scope.control.value : $scope.model.value
+            });
+        };
+
+        async function getEditorData() {
             try {
-                const editordata = await vm.editorjs.save();
+                const outputData = await vm.editorjs.save();
                 if (vm.isGridEditor) {
-                    $scope.control.value = editordata;
+                    $scope.control.value = outputData;
                 } else {
-                    $scope.model.value = editordata;
+                    $scope.model.value = outputData;
                 }
-                //console.log("vm.editorjs.save()", editordata);
+                //console.log("saving", outputData);
             } catch (error) {
                 console.error("unable to fetch Editor.js data", error);
             }
+            setDirty();
         };
 
         function openMediaPicker(e) {
@@ -206,23 +149,13 @@ angular.module("umbraco").controller("Our.Umbraco.Editorjs.Controller", [
             editorService.mediaPicker(options);
         };
 
-        // load the separate css for the editor to avoid it blocking our JavaScript loading
-        assetsService.loadCss("/App_Plugins/editorjs/backoffice.css");
+        function setDirty() {
+            if ($scope.propertyForm) {
+                $scope.propertyForm.$setDirty();
+            }
+        };
 
-        // - load blocks
-        if (config.blocks.length > 0) {
-            var blocksToLoad = [];
-
-            _.each(config.blocks, function (block) {
-                blocksToLoad.push("/App_Plugins/editorjs/Lib/blocks/" + block);
-            });
-
-            assetsService.load(blocksToLoad).then(function () {
-                // - done loading the blocks ... init editor!
-                init();
-            });
-        }
-
+        init();
     }
 ]);
 

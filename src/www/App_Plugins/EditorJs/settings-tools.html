@@ -1,0 +1,20 @@
+<div class="umb-property-editor umb-checkboxlist" ng-controller="Our.Umbraco.Editorjs.SettingsTools.Controller as vm">
+
+    <!-- TODO: Replace this with "toggle-group" in Umbraco 8.1 [LK] -->
+    <div class="block-form">
+        <umb-control-group ng-repeat="(groupName, tools) in vm.tools" label="{{groupName}}" style="margin-bottom:20px;">
+            <div class="umb-permission" ng-repeat="tool in tools">
+                <umb-toggle class="umb-permission__toggle" checked="tool.enabled" on-click="vm.toggle(tool)"></umb-toggle>
+                <div class="umb-permission__content" ng-click="vm.configure(tool)">
+                    <div>{{tool.name}}</div>
+                    <div class="umb-permission__description">{{tool.description}}</div>
+                </div>
+            </div>
+        </umb-control-group>
+    </div>
+
+    <details open>
+        <summary>Debug</summary>
+        <pre>{{model.value | json}}</pre>
+    </details>
+</div>

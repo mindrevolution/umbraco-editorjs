@@ -11,3 +11,4 @@ Thumbs.db
 
 src/packages/
 src/www/
+!src/www/[Aa]pp_[Pp]lugins/[Ee]ditor[Jj]s/

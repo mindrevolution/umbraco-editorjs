@@ -20,8 +20,8 @@ _(TODO)_
 
 ## Manual installation
 These steps are required for manual installation:
-- add [/App_Plugins/editorjs/] to your website
-- add [/bin/Editorjs.dll] assembly
+- add `/App_Plugins/EditorJs/` to your website
+- add `/bin/Our.Umbraco.EditorJs.dll` assembly
 
 ## Customize the editor
 _(TODO)_
@@ -31,8 +31,8 @@ Full documentation for Editor.js can be found [here](https://editorjs.io/base-co
 
 ## Licence
 
-Editor.js Package for Umbraco is released under the MIT license: [opensource.org/licenses/MIT](https://opensource.org/licenses/MIT)     
-[Editor.js](https://editorjs.io/) is provided under the Apache License (Version 2.0): [opensource.org/licenses/Apache-2.0](https://opensource.org/licenses/Apache-2.0)
+- Editor.js Package for Umbraco is released under the [MIT license](https://opensource.org/licenses/MIT).
+- [Editor.js](https://editorjs.io/) is provided under the [Apache License (Version 2.0)](https://opensource.org/licenses/Apache-2.0).
 
 
 ## Contributing

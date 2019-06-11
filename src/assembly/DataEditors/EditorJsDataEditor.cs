@@ -16,7 +16,7 @@ namespace Our.Umbraco.EditorJs.DataEditors
         ValueType = ValueTypes.Json)]
     [PropertyEditorAsset(ClientDependencyType.Javascript, "/App_Plugins/EditorJs/lib/editorjs/editor.js")]
     [PropertyEditorAsset(ClientDependencyType.Javascript, "/App_Plugins/EditorJs/editorjs.js")]
-    [PropertyEditorAsset(ClientDependencyType.Javascript, "/App_Plugins/EditorJs/settings-blocks.js")]
+    [PropertyEditorAsset(ClientDependencyType.Javascript, "/App_Plugins/EditorJs/settings-tools.js")]
     public class EditorJsDataEditor : DataEditor
     {
         internal const string DataEditorAlias = "Our.Umbraco.EditorJs";
