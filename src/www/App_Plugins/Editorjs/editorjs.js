@@ -6,20 +6,26 @@ angular.module("umbraco").controller("Our.Umbraco.Editorjs.Controller", [
     "Our.Umbraco.Editorjs.Resources.ImageTool",
     function ($scope, assetsService, editorService, umbRequestHelper, editorjsImageToolResource) {
 
+        if (_.has($scope.model, "contentTypeId")) {
+            // NOTE: This will prevents Editor.js attempting to load whilst in the Content Type Editor's property preview panel.
+            return;
+        }
+
+        var _isGridEditor = $scope.control !== undefined;
+
         var defaultConfig = { tools: {} };
-        var config = angular.extend({}, defaultConfig, $scope.model.config);
+        var config = angular.extend({}, defaultConfig, (_isGridEditor ? $scope.control.editor.config : $scope.model.config));
 
         var vm = this;
 
         function init() {
 
             vm.editorjs = null;
-            vm.layout = $scope.model.hideLabel ? "umb-editorjs-80" : "umb-editorjs-70";
-            vm.isGridEditor = $scope.control !== undefined;
+            vm.layout = _isGridEditor || $scope.model.hideLabel ? "umb-editorjs-80" : "umb-editorjs-70";
 
             // set the Editor.js instance id
-            vm.editorId = "editorjs_" + (vm.isGridEditor ? $scope.control.$uniqueId : $scope.model.alias);
-            console.log("editorjs.init", vm.editorId, vm.isGridEditor, ($scope.model || $scope.control));
+            vm.editorId = "editorjs_" + (_isGridEditor ? $scope.control.$uniqueId.substring(0, 8) : $scope.model.alias);
+            //console.log("editorjs.init", vm.editorId, _isGridEditor, (_isGridEditor ? $scope.control : $scope.model));
 
             // load the separate css for the editor to avoid it blocking our JavaScript loading
             assetsService.loadCss("/App_Plugins/editorjs/backoffice.css");
@@ -30,33 +36,29 @@ angular.module("umbraco").controller("Our.Umbraco.Editorjs.Controller", [
                     toolsConfig = {};
 
                 _.each(config.tools, function (tool) {
-                    if (tool.enabled) {
-                        toolScripts.push(umbRequestHelper.convertVirtualToAbsolutePath(tool.path));
-                    }
+                    toolScripts.push(umbRequestHelper.convertVirtualToAbsolutePath(tool.path));
                 });
 
                 assetsService.load(toolScripts).then(function () {
 
                     // - configure the blocks - this can only be done AFTER the scripts are loaded.
-                    for (var tool in config.tools) {
+                    _.each(config.tools, function (tool) {
 
-                        if (config.tools[tool].enabled === false) {
-                            continue;
+                        toolsConfig[tool.key] = angular.copy(tool.config);
+
+                        // HACK: Object references can't be serialized to JSON, we needed to make it a string, then find the global object.
+                        if (typeof toolsConfig[tool.key].class === "string" && _.has(window, toolsConfig[tool.key].class)) {
+                            toolsConfig[tool.key].class = window[toolsConfig[tool.key].class];
                         }
 
-                        toolsConfig[tool] = angular.copy(config.tools[tool].config);
-
-                        if (typeof toolsConfig[tool].class === "string" && _.has(window, toolsConfig[tool].class)) {
-                            toolsConfig[tool].class = window[toolsConfig[tool].class];
+                        // HACK: Edge-case, as the UmbracoMedia tool references functions from within this controller.
+                        if (tool.key === "image") {
+                            // NOTE: These function references had to be serialized as strings.
+                            // TODO: [LK:2019-06-12] We'll need to figure out how to deal with these scenarios.
+                            toolsConfig[tool.key].config.mediapicker = openMediaPicker;
+                            toolsConfig[tool.key].config.afterUpload = setMediaFolder;
                         }
-
-                        if (tool === "image") {
-                            // NOTE: There are other functions that I had to stringify ::facepalm::
-                            // I'll need to figure out how to deal with this properly. [LK]
-                            toolsConfig[tool].config.mediapicker = openMediaPicker;
-                            toolsConfig[tool].config.afterUpload = setMediaFolder;
-                        }
-                    }
+                    });
 
                     // - done loading the blocks ... init editor!
                     initEditorJs(toolsConfig);
@@ -72,14 +74,17 @@ angular.module("umbraco").controller("Our.Umbraco.Editorjs.Controller", [
                     getEditorData();
                 },
                 tools: blocksConfig,
-                data: vm.isGridEditor ? $scope.control.value : $scope.model.value
+                data: _isGridEditor ? $scope.control.value : $scope.model.value,
+                // NOTE, only found out about `minHeight` from here:
+                // https://github.com/codex-team/editor.js/pull/745/files#diff-e3bf20e89f6b22c16beb3e17fb3c8a60R154
+                minHeight: 50
             });
         };
 
         async function getEditorData() {
             try {
                 const outputData = await vm.editorjs.save();
-                if (vm.isGridEditor) {
+                if (_isGridEditor) {
                     $scope.control.value = outputData;
                 } else {
                     $scope.model.value = outputData;
@@ -116,7 +121,7 @@ angular.module("umbraco").controller("Our.Umbraco.Editorjs.Controller", [
         };
 
         function setMediaFolder(udi) {
-            console.log("setMediaFolder", udi);
+            //console.log("setMediaFolder", udi);
 
             var mediaUdi = udi;
 
@@ -131,11 +136,11 @@ angular.module("umbraco").controller("Our.Umbraco.Editorjs.Controller", [
                     if (folder !== null) {
                         // - move media to this folder!
                         var folderUdi = folder.udi;
-                        console.log("MOVE MEDIA", mediaUdi, folderUdi, folder);
+                        //console.log("MOVE MEDIA", mediaUdi, folderUdi, folder);
 
                         editorjsImageToolResource.moveMedia(mediaUdi, folderUdi)
                             .then(function () {
-                                console.log("media moved", mediaUdi, folder, folderUdi);
+                                //console.log("media moved", mediaUdi, folder, folderUdi);
                             }, function (err) {
                                 console.error("unable to move media:" + err.data.Message, mediaUdi, folder, folderUdi);
                             });

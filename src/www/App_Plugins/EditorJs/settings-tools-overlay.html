@@ -1,0 +1,83 @@
+<div class="umb-property-editor" ng-controller="Our.Umbraco.Editorjs.SettingsToolsOverlay.Controller as vm">
+    <umb-editor-view>
+
+        <umb-editor-header name="vm.title"
+                           name-locked="true"
+                           hide-alias="true"
+                           hide-icon="true"
+                           hide-description="true">
+        </umb-editor-header>
+
+        <umb-editor-container>
+
+            <div ng-if="vm.mode == 'select'">
+
+                <umb-box ng-if="vm.items.length > 0">
+                    <umb-box-content class="block-form">
+                        <div class="form-search" style="margin-bottom: 15px;">
+                            <i class="icon-search"></i>
+                            <input type="text"
+                                   style="width: 100%"
+                                   ng-model="vm.searchTerm"
+                                   class="umb-search-field search-query input-block-level"
+                                   localize="placeholder"
+                                   placeholder="@placeholders_filter"
+                                   umb-auto-focus
+                                   no-dirty-check />
+                        </div>
+                        <ul class="umb-actions umb-actions-child">
+                            <li class="umb-action" ng-repeat="item in vm.items | orderBy:'name' | filter:vm.searchTerm">
+                                <a class="umb-action-link" ng-click="vm.select(item)">
+                                    <i class="icon {{item.icon || vm.defaultIcon}} large"></i>
+                                    <span class="menu-label">
+                                        {{item.name}}
+                                        <small>{{item.description}}</small>
+                                    </span>
+                                </a>
+                            </li>
+                        </ul>
+                    </umb-box-content>
+                </umb-box>
+
+                <umb-empty-state ng-if="vm.items.length === 0" position="center">
+                    There are no tools available to add.
+                </umb-empty-state>
+
+            </div>
+
+            <div ng-if="vm.mode == 'configure'">
+
+                <umb-box ng-if="vm.config !== undefined">
+                    <umb-box-content class="block-form">
+                        <div umb-ace-editor="vm.aceOptions" model="vm.config"></div>
+                    </umb-box-content>
+                </umb-box>
+
+                <umb-empty-state ng-if="vm.config === undefined" position="center">
+                    There is no configuration for this tool.
+                </umb-empty-state>
+
+            </div>
+
+        </umb-editor-container>
+
+        <umb-editor-footer>
+            <umb-editor-footer-content-right>
+                <umb-button type="button"
+                            button-style="link"
+                            shortcut="esc"
+                            label-key="general_close"
+                            action="vm.close()">
+                </umb-button>
+                <umb-button ng-if="vm.config !== undefined"
+                            type="button"
+                            button-style="success"
+                            label-key="bulk_done"
+                            action="vm.save(vm.selectedItem, vm.config)">
+                </umb-button>
+            </umb-editor-footer-content-right>
+        </umb-editor-footer>
+
+    </umb-editor-view>
+</div>
+

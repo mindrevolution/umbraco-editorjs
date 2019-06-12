@@ -11,12 +11,12 @@ namespace Our.Umbraco.EditorJs.DataEditors
         DataEditorName,
         DataEditorViewPath,
         Group = DataEditorGroup,
-        HideLabel = true,
         Icon = DataEditorIcon,
         ValueType = ValueTypes.Json)]
     [PropertyEditorAsset(ClientDependencyType.Javascript, "/App_Plugins/EditorJs/lib/editorjs/editor.js")]
     [PropertyEditorAsset(ClientDependencyType.Javascript, "/App_Plugins/EditorJs/editorjs.js")]
     [PropertyEditorAsset(ClientDependencyType.Javascript, "/App_Plugins/EditorJs/settings-tools.js")]
+    [PropertyEditorAsset(ClientDependencyType.Javascript, "/App_Plugins/EditorJs/settings-tools-overlay.js")]
     public class EditorJsDataEditor : DataEditor
     {
         internal const string DataEditorAlias = "Our.Umbraco.EditorJs";
@@ -30,5 +30,7 @@ namespace Our.Umbraco.EditorJs.DataEditors
         { }
 
         protected override IConfigurationEditor CreateConfigurationEditor() => new EditorJsConfigurationEditor();
+
+        protected override IDataValueEditor CreateValueEditor() => new EditorJsDataValueEditor(Attribute);
     }
 }

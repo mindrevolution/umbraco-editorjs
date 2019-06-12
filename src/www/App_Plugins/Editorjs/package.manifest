@@ -7,7 +7,141 @@
             //"render": "/app_plugins/yourpackage/custom-render.cshtml",
             "icon": "icon-list",
             "config": {
-                "tools": []
+                "tools": [
+                    {
+                        "key": "header",
+                        "path": "~/App_Plugins/Editorjs/Lib/blocks/header.js",
+                        "config": {
+                            "class": "Header",
+                            "inlineToolbar": true,
+                            "config": {
+                                "placeholder": "Enter a header"
+                            }
+                        }
+                    },
+                    {
+                        "key": "image",
+                        "path": "~/App_Plugins/Editorjs/Lib/blocks/umbracoMedia.js",
+                        "config": {
+                            "class": "UmbracoMedia",
+                            "config": {
+                                "endpoints": {
+                                    "byFile": "/umbraco/backoffice/EditorJs/ImageTool/UploadByFile",
+                                    "byUrl": "/umbraco/backoffice/EditorJs/ImageTool/UploadByUrl"
+                                },
+                                "mediapicker": "openMediaPicker",
+                                "afterUpload": "setMediaFolder"
+                            }
+                        }
+                    },
+                    {
+                        "key": "list",
+                        "path": "~/App_Plugins/Editorjs/Lib/blocks/list.js",
+                        "config": {
+                            "class": "List",
+                            "inlineToolbar": true
+                        }
+                    },
+                    {
+                        "key": "linkTool",
+                        "path": "~/App_Plugins/Editorjs/Lib/blocks/link.js",
+                        "config": {
+                            "class": "LinkTool",
+                            "config": {
+                                "endpoint": "/umbraco/backoffice/EditorJs/LinkTool/FetchUrl" // Your backend endpoint for url data fetching
+                            }
+                        }
+                    },
+                    {
+                        "key": "code",
+                        "path": "~/App_Plugins/Editorjs/Lib/blocks/code.js",
+                        "config": {
+                            "class": "CodeTool"
+                        }
+                    },
+                    {
+                        "key": "quote",
+                        "path": "~/App_Plugins/Editorjs/Lib/blocks/quote.js",
+                        "config": {
+                            "class": "Quote",
+                            "inlineToolbar": true,
+                            //shortcut: 'CMD+SHIFT+O',
+                            "config": {
+                                "quotePlaceholder": "Enter a quote",
+                                "captionPlaceholder": "Quote's author"
+                            }
+                        }
+                    },
+                    {
+                        "key": "delimiter",
+                        "path": "~/App_Plugins/Editorjs/Lib/blocks/delimiter.js",
+                        "config": {
+                            "class": "Delimiter"
+                        }
+                    },
+                    {
+                        "key": "embed",
+                        "path": "~/App_Plugins/Editorjs/Lib/blocks/embed.js",
+                        "config": {
+                            "class": "Embed",
+                            "inlineToolbar": true
+                        }
+                    },
+                    {
+                        "key": "checklist",
+                        "path": "~/App_Plugins/Editorjs/Lib/blocks/checklist.js",
+                        "config": {
+                            "class": "Checklist",
+                            "inlineToolbar": true
+                        }
+                    },
+                    {
+                        "key": "table",
+                        "path": "~/App_Plugins/Editorjs/Lib/blocks/table.js",
+                        "config": {
+                            "class": "Table",
+                            "inlineToolbar": true,
+                            "config": {
+                                "rows": 3,
+                                "cols": 3
+                            }
+                        }
+                    },
+                    {
+                        "key": "warning",
+                        "path": "~/App_Plugins/Editorjs/Lib/blocks/warning.js",
+                        "config": {
+                            "class": "Warning",
+                            "inlineToolbar": true,
+                            //shortcut: 'CTRL+SHIFT+W',
+                            "config": {
+                                "titlePlaceholder": "Title",
+                                "messagePlaceholder": "Message"
+                            }
+                        }
+                    },
+                    {
+                        "key": "raw",
+                        "path": "~/App_Plugins/Editorjs/Lib/blocks/rawHtml.js",
+                        "config": {
+                            "class": "RawTool"
+                        }
+                    },
+                    {
+                        "key": "Marker",
+                        "path": "~/App_Plugins/Editorjs/Lib/blocks/marker.js",
+                        "config": {
+                            "class": "Marker"
+                        }
+                    },
+                    {
+                        "key": "inlineCode",
+                        "path": "~/App_Plugins/Editorjs/Lib/blocks/inline-code.js",
+                        "config": {
+                            "class": "InlineCode"
+                        }
+                    }
+                ]
             }
         }
     ]
