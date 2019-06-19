@@ -1,0 +1,7 @@
+﻿@inherits UmbracoViewPage<Our.Umbraco.EditorJs.ValueConverters.EditorJsModel.Block>
+@{
+    var html = Model.Data["html"];
+}
+<div class="embed-responsive embed-responsive-16by9">
+    @Html.Raw(html)
+</div>

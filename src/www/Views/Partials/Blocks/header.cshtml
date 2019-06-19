@@ -1,0 +1,6 @@
+﻿@inherits UmbracoViewPage<Our.Umbraco.EditorJs.ValueConverters.EditorJsModel.Block>
+@{
+    var tagName = $"h{Model.Data["level"]}";
+    var text = Model.Data["text"];
+}
+<@tagName>@text</@tagName>

@@ -1,0 +1,12 @@
+﻿@inherits UmbracoViewPage<Our.Umbraco.EditorJs.ValueConverters.EditorJsModel.Block>
+@{
+    var url = Model.Data["link"].ToString();
+    var meta = Model.Data["meta"]; // there's also a "meta" property, but I had no data for that.
+}
+    <div class="alert alert-info" role="alert">
+        <b>@meta["title"]</b>
+        <img src="@meta["image"]["url"]" alt="@meta["title"]" height="64" align="right"><br />
+        <p>@meta["description"]</p>
+        <a href="@url" target="_blank">@url</a>
+    </div>
+

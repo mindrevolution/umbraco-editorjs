@@ -1,0 +1,5 @@
+﻿@inherits UmbracoViewPage<Our.Umbraco.EditorJs.ValueConverters.EditorJsModel.Block>
+@{
+    var code = Model.Data["code"].ToString();
+}
+<pre><code>@Html.Raw(code)</code></pre>

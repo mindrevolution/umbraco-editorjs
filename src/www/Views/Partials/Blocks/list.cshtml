@@ -1,0 +1,11 @@
+﻿@inherits UmbracoViewPage<Our.Umbraco.EditorJs.ValueConverters.EditorJsModel.Block>
+@{
+    var items = Model.Data["items"];
+    var tagName = Model.Data["style"].ToString() == "ordered" ? "ol" : "ul";
+}
+<@tagName>
+    @foreach (var item in items)
+    {
+        <li>@item</li>
+    }
+</@tagName>

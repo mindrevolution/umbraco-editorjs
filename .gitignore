@@ -1,0 +1,14 @@
+.vs
+_ReSharper.*
+[Bb]in/
+[Oo]bj/
+*.suo
+*.user
+*.cache
+*.orig
+Thumbs.db
+.DS_Store
+
+src/packages/
+src/www/
+!src/www/[Aa]pp_[Pp]lugins/[Ee]ditor[Jj]s/

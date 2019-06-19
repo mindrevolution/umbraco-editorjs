@@ -1,0 +1,13 @@
+﻿@inherits UmbracoViewPage<Our.Umbraco.EditorJs.ValueConverters.EditorJsModel.Block>
+@{
+    var items = Model.Data["items"];
+}
+@foreach (var item in items)
+{
+    <div class="form-check">
+        <input class="form-check-input" type="checkbox" value="" checked="@(item.Value<bool>("checked") ? "" : null)" disabled>
+        <label class="form-check-label">
+            @item["text"]
+        </label>
+    </div>
+}
