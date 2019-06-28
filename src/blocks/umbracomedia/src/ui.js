@@ -100,7 +100,7 @@ export default class Ui {
    * @return {Element}
    */
   createPickerButton() {
-    let button = make('div', [ this.CSS.button ]);
+    const button = make('div', [ this.CSS.button ]);
 
     button.innerHTML = this.config.buttonContent || `${buttonIcon} Select an Image`;
 
@@ -139,7 +139,7 @@ export default class Ui {
      */
     const tag = /\.mp4$/.test(url) ? 'VIDEO' : 'IMG';
 
-    let attributes = {
+    const attributes = {
       src: url
     };
 
@@ -235,7 +235,7 @@ export default class Ui {
  * @return {Element}
  */
 export const make = function make(tagName, classNames = null, attributes = {}) {
-  let el = document.createElement(tagName);
+  const el = document.createElement(tagName);
 
   if (Array.isArray(classNames)) {
     el.classList.add(...classNames);
@@ -243,7 +243,7 @@ export const make = function make(tagName, classNames = null, attributes = {}) {
     el.classList.add(classNames);
   }
 
-  for (let attrName in attributes) {
+  for (const attrName in attributes) {
     el[attrName] = attributes[attrName];
   }
 

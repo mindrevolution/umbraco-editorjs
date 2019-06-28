@@ -41,7 +41,7 @@ module.exports = {
   output: {
     path: path.join(__dirname, '/../../www/App_Plugins/EditorJs/lib/blocks'),
     publicPath: '/',
-    filename: 'umbracomedia.js',
+    filename: 'umbracoMedia.js',
     library: 'UmbracoMedia',
     libraryTarget: 'umd',
     libraryExport: 'default'

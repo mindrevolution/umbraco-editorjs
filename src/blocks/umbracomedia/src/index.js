@@ -323,7 +323,7 @@ export default class UmbracoMedia {
    * @param {UploadResponseFormat} response
    */
   onMediaPick(file) {
-    console.log("onMediaPick", file);
+    console.log('onMediaPick', file);
     this.image = file;
   }
 
