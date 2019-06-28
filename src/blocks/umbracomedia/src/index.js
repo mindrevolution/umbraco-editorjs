@@ -13,12 +13,13 @@
  *  3) ui.js — module for UI manipulations: render, showing preloader, etc
  *  4) tunes.js — working with Block Tunes: render buttons, handle clicks
  *
-  * image: {
+ * image: {
  *   class: UmbracoMedia,
  *   config: {
  *     endpoints: {
- *       byFile: 'http://localhost/uploadFile',
- *       byUrl: 'http://localhost/fetchUrl',
+ *       byFile: 'http://localhost/byFile',
+ *       byUrl: 'http://localhost/byUrl',
+ *       moveMedia: 'http://localhost/moveMedia',
  *     }
  *   },
  * },
@@ -41,6 +42,7 @@ import Ui from './ui';
 import Tunes from './tunes';
 import ToolboxIcon from './svg/toolbox.svg';
 import Uploader from './uploader';
+import ajax from '@codexteam/ajax';
 
 /**
  * @typedef {object} ImageConfig
@@ -48,6 +50,7 @@ import Uploader from './uploader';
  * @property {object} endpoints - upload endpoints
  * @property {string} endpoints.byFile - upload by file
  * @property {string} endpoints.byUrl - upload by URL
+ * @property {string} endpoints.moveMedia - move media item
  * @property {string} field - field name for uploaded image
  * @property {string} types - available mime-types
  * @property {string} captionPlaceholder - placeholder for Caption field
@@ -57,8 +60,6 @@ import Uploader from './uploader';
  * @property {object} [uploader] - optional custom uploader
  * @property {function(File): Promise.<UploadResponseFormat>} [uploader.uploadByFile] - method that upload image by File
  * @property {function(string): Promise.<UploadResponseFormat>} [uploader.uploadByUrl] - method that upload image by URL
- * @property {object} [mediapicker] - umbraco media picker function (replaces file select)
- * @property {object} [afterUpload] - callback after the upload of a media was successful
  */
 
 /**
@@ -105,8 +106,7 @@ export default class UmbracoMedia {
       captionPlaceholder: config.captionPlaceholder || 'Caption',
       buttonContent: config.buttonContent || '',
       uploader: config.uploader || undefined,
-      mediapicker: config.mediapicker || undefined,
-      afterUpload: config.afterUpload || undefined
+      umbEditorService: config.editorService || undefined
     };
 
     /**
@@ -125,7 +125,26 @@ export default class UmbracoMedia {
       api,
       config: this.config,
       onPickMedia: () => {
-        this.config.mediapicker(this);
+        const block = this;
+        const editorService = this.config.umbEditorService;
+
+        editorService.mediaPicker({
+          multiPicker: false,
+          onlyImages: true,
+          disableFolderSelect: true,
+          submit: function (result) {
+            editorService.close();
+            var media = result.selection[0];
+
+            block.image = {
+              url: media.file.src + '?width=1000&mode=max&format=jpeg&quality=90',
+              udi: media.udi
+            };
+          },
+          close: function () {
+            editorService.close();
+          }
+        });
       }
     });
 
@@ -308,9 +327,44 @@ export default class UmbracoMedia {
    */
   onUpload(response) {
     if (response.success && response.file) {
-      this.image = response.file;
       // - notify successful upload
-      this.config.afterUpload(response.file.udi);
+      this.image = response.file;
+
+      const editorService = this.config.umbEditorService;
+      const moveMediaUrl = this.config.endpoints.moveMedia;
+      const mediaUdi = response.file.udi;
+
+      editorService.mediaPicker({
+        multiPicker: false,
+        onlyImages: false,
+        disableFolderSelect: false,
+        title: 'Sort media into folder?',
+        submit: function (result) {
+          editorService.close();
+          const folder = result.selection[0];
+
+          if (folder !== null) {
+            // - move media to this folder!
+            const folderUdi = folder.udi;
+
+            // console.log("MOVE MEDIA", mediaUdi, folderUdi, folder);
+            ajax.get({
+              url: moveMediaUrl,
+              data: {
+                'media': mediaUdi,
+                'folder': folderUdi
+              }
+            }).then(function (success) {
+              // console.log("media moved", mediaUdi, folder, folderUdi);
+            }).catch(function (error) {
+              console.error(`Unable to move media: ${error.code}.`, mediaUdi, folder, folderUdi, 'Response:', error.body);
+            });
+          }
+        },
+        close: function () {
+          editorService.close();
+        }
+      });
     } else {
       this.uploadingFailed('incorrect response: ' + JSON.stringify(response));
     }
