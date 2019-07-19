@@ -3,8 +3,7 @@ angular.module("umbraco").controller("Our.Umbraco.Editorjs.Controller", [
     "assetsService",
     "editorService",
     "umbRequestHelper",
-    "Our.Umbraco.Editorjs.Resources.ImageTool",
-    function ($scope, assetsService, editorService, umbRequestHelper, editorjsImageToolResource) {
+    function ($scope, assetsService, editorService, umbRequestHelper) {
 
         if (_.has($scope.model, "contentTypeId")) {
             // NOTE: This will prevents Editor.js attempting to load whilst in the Content Type Editor's property preview panel.
@@ -51,12 +50,9 @@ angular.module("umbraco").controller("Our.Umbraco.Editorjs.Controller", [
                             toolsConfig[tool.key].class = window[toolsConfig[tool.key].class];
                         }
 
-                        // HACK: Edge-case, as the UmbracoMedia tool references functions from within this controller.
-                        if (tool.key === "image") {
-                            // NOTE: These function references had to be serialized as strings.
-                            // TODO: [LK:2019-06-12] We'll need to figure out how to deal with these scenarios.
-                            toolsConfig[tool.key].config.mediapicker = openMediaPicker;
-                            toolsConfig[tool.key].config.afterUpload = setMediaFolder;
+                        if (toolsConfig[tool.key].hasOwnProperty("requiresEditorService") && toolsConfig[tool.key].requiresEditorService === true) {
+                            // TODO: It would be great to use DI to inject any AngularJs service/resource.
+                            toolsConfig[tool.key].config.editorService = editorService;
                         }
                     });
 
@@ -96,64 +92,6 @@ angular.module("umbraco").controller("Our.Umbraco.Editorjs.Controller", [
             setDirty();
         };
 
-        function openMediaPicker(e) {
-            //console.log("openMediaPicker:", e);
-            var block = e;
-
-            var options = {
-                multiPicker: false,
-                onlyImages: true,
-                disableFolderSelect: true,
-                submit: function (result) {
-                    editorService.close();
-                    var media = result.selection[0];
-                    block.image = {
-                        url: media.file.src + "?width=1000&mode=max&format=jpeg&quality=90",
-                        udi: media.udi
-                    };
-                },
-                close: function () {
-                    editorService.close();
-                }
-            };
-
-            editorService.mediaPicker(options);
-        };
-
-        function setMediaFolder(udi) {
-            //console.log("setMediaFolder", udi);
-
-            var mediaUdi = udi;
-
-            var options = {
-                multiPicker: false,
-                onlyImages: false,
-                disableFolderSelect: false,
-                title: "Sort media into folder?",
-                submit: function (result) {
-                    editorService.close();
-                    var folder = result.selection[0];
-                    if (folder !== null) {
-                        // - move media to this folder!
-                        var folderUdi = folder.udi;
-                        //console.log("MOVE MEDIA", mediaUdi, folderUdi, folder);
-
-                        editorjsImageToolResource.moveMedia(mediaUdi, folderUdi)
-                            .then(function () {
-                                //console.log("media moved", mediaUdi, folder, folderUdi);
-                            }, function (err) {
-                                console.error("unable to move media:" + err.data.Message, mediaUdi, folder, folderUdi);
-                            });
-                    }
-                },
-                close: function () {
-                    editorService.close();
-                }
-            };
-
-            editorService.mediaPicker(options);
-        };
-
         function setDirty() {
             if ($scope.propertyForm) {
                 $scope.propertyForm.$setDirty();
@@ -161,24 +99,5 @@ angular.module("umbraco").controller("Our.Umbraco.Editorjs.Controller", [
         };
 
         init();
-    }
-]);
-
-angular.module("umbraco.resources").factory("Our.Umbraco.Editorjs.Resources.ImageTool", [
-    "$q",
-    "$http",
-    function ($q, $http) {
-        return {
-            moveMedia: function (mediaUdi, folderUdi) {
-                return $http({
-                    url: "backoffice/EditorJs/ImageTool/MoveMedia",
-                    method: "GET",
-                    params: {
-                        "media": mediaUdi,
-                        "folder": folderUdi
-                    }
-                });
-            }
-        };
     }
 ]);

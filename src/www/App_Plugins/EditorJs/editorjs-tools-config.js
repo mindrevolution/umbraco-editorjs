@@ -21,13 +21,13 @@
         "path": "~/App_Plugins/EditorJs/lib/blocks/umbracoMedia.js",
         "config": {
             "class": "UmbracoMedia",
+            "requiresEditorService": true,
             "config": {
                 "endpoints": {
                     "byFile": "/umbraco/backoffice/EditorJs/ImageTool/UploadByFile",
-                    "byUrl": "/umbraco/backoffice/EditorJs/ImageTool/UploadByUrl"
-                },
-                "mediapicker": "openMediaPicker",
-                "afterUpload": "setMediaFolder"
+                    "byUrl": "/umbraco/backoffice/EditorJs/ImageTool/UploadByUrl",
+                    "moveMedia": "/umbraco/backoffice/EditorJs/ImageTool/MoveMedia"
+                }
             }
         }
     },
