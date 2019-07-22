@@ -11,7 +11,7 @@
     <AssemblyName>Our.Umbraco.EditorJs</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <Deterministic>true</Deterministic>
+    <Deterministic>false</Deterministic>
     <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -109,6 +109,7 @@
     <Compile Include="DataEditors\EditorJsDataEditor.cs" />
     <Compile Include="DataEditors\EditorJsDataValueEditor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\VersionInfo.cs" />
     <Compile Include="ValueConverters\EditorJsModel.cs" />
     <Compile Include="ValueConverters\EditorJsValueConverter.cs" />
   </ItemGroup>
@@ -118,6 +119,8 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>xcopy "$(TargetPath)" "$(SolutionDir)\www\bin" /y</PostBuildEvent>
+    <PostBuildEvent>IF NOT "$(SolutionDir)" == "*Undefined*" (
+    XCOPY /Y "$(TargetPath)" "$(SolutionDir)\www\bin"
+)</PostBuildEvent>
   </PropertyGroup>
 </Project>

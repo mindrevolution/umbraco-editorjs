@@ -13,3 +13,4 @@ node_modules
 src/packages/
 src/www/
 !src/www/App_Plugins/EditorJs/
+artifacts/
