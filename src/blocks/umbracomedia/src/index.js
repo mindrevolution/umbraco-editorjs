@@ -137,7 +137,7 @@ export default class UmbracoMedia {
             var media = result.selection[0];
 
             block.image = {
-              url: media.file.src + '?width=1000&mode=max&format=jpeg&quality=90',
+              url: media.image + '?width=1000&mode=max&format=jpeg&quality=90',
               udi: media.udi
             };
           },
